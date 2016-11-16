@@ -5,7 +5,7 @@ python:
 
 branches:
   only:
-    - release/release-3-data-ingestor
+    - master
 
 install: true
 
@@ -39,8 +39,8 @@ deploy:
     acl: public_read
     detect_encoding: true
     on:
-      repo: airavata-courses/TeamBash 
-      branch: release/release-3-data-ingestor
+      repo: TeamBash/DataIngestor
+      branch: master
  
   - provider: codedeploy
     access_key_id: $AWS_ACCESS_KEY # declared in Travis repo settings
@@ -52,6 +52,6 @@ deploy:
     deployment_group: TeamBash-App
     region: us-west-2
     on:
-      repo: airavata-courses/TeamBash
-      branch: release/release-3-data-ingestor
+      repo: TeamBash/DataIngestor
+      branch: master
 
