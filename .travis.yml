@@ -52,6 +52,8 @@ deploy:
     region: us-east-2
     skip_cleanup: true
     acl: public_read
+    detect_encoding: true
+    on:
       repo: TeamBash/DataIngestor
       branch: develop
 
