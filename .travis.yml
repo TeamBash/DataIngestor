@@ -52,8 +52,6 @@ deploy:
     region: us-east-2
     skip_cleanup: true
     acl: public_read
-    detect_encoding: true
-    on:
       repo: TeamBash/DataIngestor
       branch: develop
 
@@ -91,6 +89,19 @@ deploy:
     bundle_type: zip
     application: TeamBash-Test2
     deployment_group: TeamBash-Test2
+    region: us-east-2
+    on:
+      repo: TeamBash/DataIngestor
+      branch: develop
+
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY # declared in Travis repo settings
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: sga-teambash-test2
+    key: TeamBash_DataIngestor_test.zip
+    bundle_type: zip
+    application: TeamBash-Test2
+    deployment_group: TeamBash-Test4
     region: us-east-2
     on:
       repo: TeamBash/DataIngestor
