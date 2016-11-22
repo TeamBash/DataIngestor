@@ -1,13 +1,24 @@
-''' Data Ingestor Microservice -
+""" Data Ingestor Microservice -
 The service will take form data and generate
-the appropriate URL for the .gz file '''
+the appropriate URL for the .gz file """
+
+import json
+import logging
+import random
+import requests
+import uuid
+import requests
+import boto
 
 from boto.s3.connection import S3Connection
 from flask import Flask, render_template, request, url_for, render_template
-import requests
-import boto
 from boto.s3.connection import S3Connection
 from flask import jsonify, abort
+from datetime import datetime
+from flask import Flask
+from kazoo.client import KazooClient
+from kazoo.client import KazooState
+from kazoo.exceptions import KazooException
 
 app = Flask(__name__)
 
@@ -46,7 +57,52 @@ def invalidArguments(e):
     return 'Error-Message Invalid arguments!!! Records does not exist' ,206
 
 
-# We only need this for local development.
+def getValue(sId, ec2IP, path):
+    return json.dumps({"name": "dataIngestor",
+                       "id": sId,
+                       "address": ec2IP,
+                       "port": 65000,
+                       "sslPort": None,
+                       "payload": None,
+                       "registrationTimeUTC": (datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds(),
+                       "serviceType": "DYNAMIC",
+                       "uriSpec": {"parts": [{"value": path,
+                                              "variable": True}]}}, ensure_ascii=True).encode()
+
+
+def my_listener(state):
+    global ip
+    if state == KazooState.LOST:
+        zkIP = ip + ":2181"
+        zk = KazooClient(hosts=zkIP)
+        zk.start()
+    elif state == KazooState.SUSPENDED:
+        print("Connection Suspended")
+    else:
+        print("Connection Error")
+
+
+def register():
+    try:
+        global ip
+        sId = str(uuid.uuid4())
+        zkIp = ip + ":2181"
+        zk = KazooClient(hosts=zkIp)
+        zk.start()
+        zk.add_listener(my_listener)
+        path = "http://" + ip + ":65000/getUrl/<string:yy>/<string:mm>/<string:dd>/<string:stationId>/"
+        zk.create("/services/dataIngestor/" + sId, getValue(sId, ip, path), ephemeral=True, makepath=True)
+    except KazooException as e:
+        print(e.__doc__)
+    logging.basicConfig()
+
+
 if __name__ == '__main__':
-    #restart automatically if DEBUG = True
-    app.run(host = '0.0.0.0',port=int(65000))
+    ip = requests.get("http://checkip.amazonaws.com/").text.split("\n")[0]
+#    ip = "127.0.0.1"
+    register()
+    app.run(
+        host="0.0.0.0",
+        port=int(65000)
+        # debug=True
+    )
