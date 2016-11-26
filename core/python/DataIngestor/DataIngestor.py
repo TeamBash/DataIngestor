@@ -90,7 +90,7 @@ def register():
         zk = KazooClient(hosts=zkIp)
         zk.start()
         zk.add_listener(my_listener)
-        path = "http://" + ip + ":65000/getUrl/<string:yy>/<string:mm>/<string:dd>/<string:stationId>/"
+        path = "http://" + ip + ":65000/getUrl/"
         zk.create("/services/dataIngestor/" + sId, getValue(sId, ip, path), ephemeral=True, makepath=True)
     except KazooException as e:
         print(e.__doc__)
