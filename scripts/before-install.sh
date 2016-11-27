@@ -19,15 +19,15 @@ docker ps -a | grep 'data-ingestor-service' | awk '{print $1}' | xargs --no-run-
 install_dir="/usr/local"
 dir="/usr/local/zookeeper-3.4.8"
 if [ ! -d "$dir" ] ; then
-cd "$install_dir"
-wget http://www-us.apache.org/dist/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
-tar xzf zookeeper-3.4.8.tar.gz
-rm zookeeper-3.4.8.tar.gz
-cd "$dir/conf"
-touch zoo.cfg
-echo "tickTime=2000" > zoo.cfg
-echo "dataDir=/var/lib/zookeeper" >> zoo.cfg
-echo "clientPort=2181" >> zoo.cfg
+	cd "$install_dir"
+	wget http://www-us.apache.org/dist/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz
+	tar xzf zookeeper-3.4.8.tar.gz
+	rm zookeeper-3.4.8.tar.gz
+	cd "$dir/conf"
+	touch zoo.cfg
+	echo "tickTime=2000" > zoo.cfg
+	echo "dataDir=/var/lib/zookeeper" >> zoo.cfg
+	echo "clientPort=2181" >> zoo.cfg
 fi
 
 cd "$dir/bin"
