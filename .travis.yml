@@ -28,7 +28,7 @@ after_success:
 before_deploy:
   - zip -r TeamBash_DataIngestor_test.zip core/python/DataIngestor scripts appspec.yml Dockerfile || true
   - mkdir -p "dataIngestor_upload"
-  - mv TeamBash_DataIngestor.zip dataIngestor_upload/TeamBash_DataIngestor.zip || true
+  - mv TeamBash_DataIngestor_test.zip dataIngestor_upload/TeamBash_DataIngestor_test.zip || true
 
 deploy:
   - provider: s3
