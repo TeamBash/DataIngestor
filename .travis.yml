@@ -22,9 +22,11 @@ before_script:
 
 script: nosetests
 
-before_deploy:
+after_success:
   - cd ../../../
-  - zip -r TeamBash_DataIngestor.zip core/python/DataIngestor scripts appspec.yml Dockerfile || true
+
+before_deploy:
+  - zip -r TeamBash_DataIngestor_test.zip core/python/DataIngestor scripts appspec.yml Dockerfile || true
   - mkdir -p "dataIngestor_upload"
   - mv TeamBash_DataIngestor.zip dataIngestor_upload/TeamBash_DataIngestor.zip || true
 
@@ -32,26 +34,64 @@ deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY # declared in Travis repo settings
     secret_access_key: $AWS_SECRET_KEY
-    bucket: sga-teambash
+    bucket: sga-teambash-test2
     local_dir: dataIngestor_upload
-    region: us-west-2
+    region: us-east-2
     skip_cleanup: true
     acl: public_read
     detect_encoding: true
     on:
       repo: TeamBash/DataIngestor
       branch: master
- 
-  - provider: codedeploy
+
+  - provider: s3
     access_key_id: $AWS_ACCESS_KEY # declared in Travis repo settings
     secret_access_key: $AWS_SECRET_KEY
-    bucket: sga-teambash
-    key: TeamBash_DataIngestor.zip
-    bundle_type: zip
-    application: TeamBash-App
-    deployment_group: TeamBash-App
-    region: us-west-2
+    bucket: sga-teambash-test3
+    local_dir: dataIngestor_upload
+    region: us-west-1
+    skip_cleanup: true
+    acl: public_read
+    detect_encoding: true
     on:
       repo: TeamBash/DataIngestor
       branch: master
 
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY # declared in Travis repo settings
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: sga-teambash-test2
+    key: TeamBash_DataIngestor_test.zip
+    bundle_type: zip
+    application: TeamBash-Test2
+    deployment_group: TeamBash-Test2
+    region: us-east-2
+    on:
+      repo: TeamBash/DataIngestor
+      branch: master
+
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY # declared in Travis repo settings
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: sga-teambash-test2
+    key: TeamBash_DataIngestor_test.zip
+    bundle_type: zip
+    application: TeamBash-Test2
+    deployment_group: TeamBash-Test4
+    region: us-east-2
+    on:
+      repo: TeamBash/DataIngestor
+      branch: master
+
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY # declared in Travis repo settings
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: sga-teambash-test3
+    key: TeamBash_DataIngestor_test.zip
+    bundle_type: zip
+    application: TeamBash-Test3
+    deployment_group: TeamBash-Test3
+    region: us-west-1
+    on:
+      repo: TeamBash/DataIngestor
+      branch: master
